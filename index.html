@@ -1,0 +1,142 @@
+HTML
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>조용한 차박지 찾기</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.min.js"></script>
+</head>
+<body class="bg-gray-100">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // 차박지 앱 컴포넌트
+    function App() {
+      const [selectedRegion, setSelectedRegion] = useState('전체');
+      const [searchQuery, setSearchQuery] = useState('');
+      const [activeTab, setActiveTab] = useState('home');
+
+      const regions = ['전체', '바닷가', '경기도', '강원도', '충청도', '전라도', '경상도', '제주도'];
+
+      const spots = [
+        {
+          id: 1,
+          name: '태안 삼봉해수욕장',
+          region: '바닷가',
+          location: '충남 태안군 안면읍',
+          desc: '울창한 솔밭과 탁 트인 서해 바다를 동시에 즐길 수 있는 고요한 아지트.',
+          image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800',
+          video: 'https://assets.mixkit.co/videos/preview/mixkit-waves-in-the-water-1164-large.mp4',
+          tags: ['바닷가', '솔밭', '화장실있음']
+        },
+        {
+          id: 2,
+          name: '강릉 헌화로 해안도로',
+          region: '바닷가',
+          location: '강원 강릉시 옥계면',
+          desc: '바다와 가장 가까운 해안도로 변의 파도 소리가 가득한 차박 스팟.',
+          image: 'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=800',
+          video: 'https://assets.mixkit.co/videos/preview/mixkit-sea-waves-loop-42890-large.mp4',
+          tags: ['바닷가', '파도소리', '일출명소']
+        },
+        {
+          id: 3,
+          name: '포천 비둘기낭 폭포 부근',
+          region: '경기도',
+          location: '경기 포천시 영북면',
+          desc: '한탄강 주상절리길 인근의 호젓하고 밤하늘 별이 잘 보이는 조용한 장소.',
+          image: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800',
+          video: 'https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4',
+          tags: ['계곡', '별보기', '차분함']
+        }
+      ];
+
+      const filtered = spots.filter(spot => {
+        const matchRegion = selectedRegion === '전체' || spot.region === selectedRegion;
+        const matchSearch = spot.name.includes(searchQuery) || spot.location.includes(searchQuery);
+        return matchRegion && matchSearch;
+      });
+
+      return (
+        <div className="max-w-md mx-auto bg-white min-h-screen pb-20 shadow-lg">
+          <header className="p-4 bg-emerald-700 text-white flex justify-between items-center sticky top-0 z-10">
+            <h1 className="text-xl font-bold flex items-center gap-2">🏕️ 조용한 차박지</h1>
+            <span className="text-xs bg-emerald-800 px-2 py-1 rounded-full">월하경</span>
+          </header>
+
+          <div className="p-4 space-y-3">
+            <input
+              type="text"
+              placeholder="스팟명 또는 지역 검색..."
+              className="w-full p-2 border rounded-lg text-sm"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+              {regions.map(r => (
+                <button
+                  key={r}
+                  onClick={() => setSelectedRegion(r)}
+                  className={`px-3 py-1 rounded-full text-xs whitespace-nowrap ${
+                    selectedRegion === r ? 'bg-emerald-700 text-white font-bold' : 'bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <main className="p-4 space-y-4">
+            {filtered.map(spot => (
+              <div key={spot.id} className="border rounded-xl overflow-hidden shadow-sm bg-white">
+                <div className="relative h-48 bg-gray-200">
+                  <img src={spot.image} alt={spot.name} className="w-full h-full object-cover" />
+                  <span className="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                    {spot.region}
+                  </span>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-bold text-lg">{spot.name}</h3>
+                  <p className="text-xs text-gray-500 mb-2">📍 {spot.location}</p>
+                  <p className="text-sm text-gray-700 mb-3">{spot.desc}</p>
+                  
+                  <div className="mb-3">
+                    <p className="text-xs font-semibold text-gray-500 mb-1">🎬 5초 현장 풍경 동영상</p>
+                    <video 
+                      src={spot.video} 
+                      autoPlay 
+                      loop 
+                      muted 
+                      playsInline 
+                      className="w-full h-32 object-cover rounded-lg bg-black"
+                    />
+                  </div>
+
+                  <div className="flex gap-1 flex-wrap">
+                    {spot.tags.map(t => (
+                      <span key={t} className="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded">
+                        #{t}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </main>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
